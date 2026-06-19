@@ -88,7 +88,7 @@ pipeline {
                        //     --auth-token ${ARGOCD_AUTH_TOKEN} \
                          //   --grpc-web \
                            // --health \
-                            //--timeout 120
+                            //--timeout 120 
                     //'''
                // }
          //   }
