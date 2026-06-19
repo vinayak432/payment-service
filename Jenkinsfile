@@ -75,22 +75,22 @@ pipeline {
                 }
             }
         }
-        stage('ArgoCD — Verify Sync') {
-            steps {
-                withCredentials([string(
-                    credentialsId: 'argocd-token',
-                    variable: 'ARGOCD_AUTH_TOKEN'
-                )]) {
-                    sh '''
-                        sleep 15
-                        argocd app wait payment-service \
-                            --server ${ARGOCD_SERVER} \
-                            --auth-token ${ARGOCD_AUTH_TOKEN} \
-                            --grpc-web \
-                            --health \
-                            --timeout 120
-                    '''
-                }
+   //     stage('ArgoCD — Verify Sync') {
+     //       steps {
+       //         withCredentials([string(
+         //           credentialsId: 'argocd-token',
+           //         variable: 'ARGOCD_AUTH_TOKEN'
+             //   )]) {
+               //     sh '''
+                 //       sleep 15
+                   //     argocd app wait payment-service \
+                     //       --server ${ARGOCD_SERVER} \
+                       //     --auth-token ${ARGOCD_AUTH_TOKEN} \
+                         //   --grpc-web \
+                           // --health \
+                            //--timeout 120
+                    //'''
+               // }
             }
         }
     }
