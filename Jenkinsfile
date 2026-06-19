@@ -27,7 +27,7 @@ pipeline {
                 failure {
                     echo 'Tests failed — not building the image.'
                 }
-            }
+        //    }
         }
         stage('Build Image') {
             steps {
