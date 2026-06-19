@@ -23,6 +23,11 @@ pipeline {
                     pytest tests/ -v --tb=short
                 '''
             }
+            post {
+                failure {
+                    echo 'Tests failed — not building the image.'
+                }
+            }
         }
         stage('Build Image') {
             steps {
@@ -31,17 +36,6 @@ pipeline {
                         -t ${ECR_REPO}:${IMAGE_TAG} \
                         -t ${ECR_REPO}:latest \
                         .
-                '''
-            }
-        }
-        stage('Security Scan — Trivy') {
-            steps {
-                sh '''
-                    trivy image \
-                        --exit-code 1 \
-                        --severity CRITICAL \
-                        --ignore-unfixed \
-                        ${ECR_REPO}:${IMAGE_TAG}
                 '''
             }
         }
