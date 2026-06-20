@@ -1,7 +1,7 @@
 pipeline {
 agent any
 
-```
+
 environment {
     AWS_REGION  = 'ap-south-1'
     ECR_REPO    = '251478238826.dkr.ecr.ap-south-1.amazonaws.com/payment-service'
