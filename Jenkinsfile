@@ -1,6 +1,10 @@
 pipeline {
 agent any
 
+```
+options {
+    disableConcurrentBuilds()
+}
 
 environment {
     AWS_REGION  = 'ap-south-1'
@@ -11,20 +15,15 @@ environment {
 
 stages {
 
-    stage('Checkout') {
-        steps {
-            git branch: 'main',
-                credentialsId: 'github-creds',
-                url: 'https://github.com/vinayak432/payment-service.git'
-        }
-    }
-
     stage('Run Tests') {
         steps {
             sh '''
                 python3 -m venv venv
                 . venv/bin/activate
+
+                pip install --upgrade pip
                 pip install -q -r requirements.txt
+
                 pytest tests/ -v --tb=short
             '''
         }
@@ -48,16 +47,18 @@ stages {
 
     stage('Push to ECR') {
         steps {
-            sh '''
-                aws ecr get-login-password --region ${AWS_REGION} \
-                | docker login \
-                    --username AWS \
-                    --password-stdin \
-                    251478238826.dkr.ecr.ap-south-1.amazonaws.com
+            withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                sh '''
+                    aws ecr get-login-password --region ${AWS_REGION} \
+                    | docker login \
+                        --username AWS \
+                        --password-stdin \
+                        251478238826.dkr.ecr.ap-south-1.amazonaws.com
 
-                docker push ${ECR_REPO}:${IMAGE_TAG}
-                docker push ${ECR_REPO}:latest
-            '''
+                    docker push ${ECR_REPO}:${IMAGE_TAG}
+                    docker push ${ECR_REPO}:latest
+                '''
+            }
         }
     }
 
@@ -94,11 +95,22 @@ stages {
             }
         }
     }
+
+    /*
+    stage('Deploy') {
+        steps {
+            sh '''
+                kubectl apply -f k8s/
+                kubectl rollout status deployment/payment-service -n payment-service
+            '''
+        }
+    }
+    */
 }
 
 post {
     success {
-        echo "Done. ${ECR_REPO}:${IMAGE_TAG} is live."
+        echo "Done. ${ECR_REPO}:${IMAGE_TAG} pushed successfully."
     }
 
     failure {
@@ -110,6 +122,6 @@ post {
         cleanWs()
     }
 }
-
+```
 
 }
