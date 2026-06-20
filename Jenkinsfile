@@ -44,7 +44,7 @@ stages {
         }
     }
 
-    stage('Push to ECR') {
+  /*  stage('Push to ECR') {
         steps {
             withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                 sh '''
@@ -59,7 +59,34 @@ stages {
                 '''
             }
         }
+    }  */
+
+    stage('Push to ECR') {
+    steps {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'aws-creds',
+                usernameVariable: 'AWS_ACCESS_KEY_ID',
+                passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+            )
+        ]) {
+            sh '''
+                export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                export AWS_DEFAULT_REGION=${AWS_REGION}
+
+                aws ecr get-login-password --region ${AWS_REGION} \
+                | docker login \
+                    --username AWS \
+                    --password-stdin \
+                    251478238826.dkr.ecr.ap-south-1.amazonaws.com
+
+                docker push ${ECR_REPO}:${IMAGE_TAG}
+                docker push ${ECR_REPO}:latest
+            '''
+        }
     }
+}
 
     stage('Update GitOps Repo') {
         steps {
