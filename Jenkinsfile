@@ -6,7 +6,7 @@ options {
 }
 
 environment {
-    AWS_REGION  = 'ap-south-1'
+    AWS_REGION  = 'ap-south-2'
     ECR_REPO    = '251478238826.dkr.ecr.ap-south-2.amazonaws.com/payment-service'
     IMAGE_TAG   = "${BUILD_NUMBER}"
     GITOPS_REPO = 'github.com/vinayak432/payment-service-gitops.git'
